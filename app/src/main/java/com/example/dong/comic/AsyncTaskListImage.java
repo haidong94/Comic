@@ -19,7 +19,7 @@ import java.util.ArrayList;
  * Created by DONG on 08-Mar-17.
  */
 
-public class AsyncTaskListImage extends AsyncTask<String,Void,Void> {
+public class AsyncTaskListImage extends AsyncTask<String,Void,ArrayList<Image>> {
     ArrayList<Image> list=new ArrayList<>();
     Context context;
     ProgressDialog progressDialog;
@@ -57,7 +57,7 @@ public class AsyncTaskListImage extends AsyncTask<String,Void,Void> {
     }
 
     @Override
-    protected Void doInBackground(String... params) {
+    protected ArrayList<Image> doInBackground(String... params) {
         Document document = null;
         try {
             document = (Document) Jsoup.connect(params[0]).get();
@@ -85,7 +85,7 @@ public class AsyncTaskListImage extends AsyncTask<String,Void,Void> {
             e.printStackTrace();
         }
 
-        return null;
+        return list;
     }
 
 
@@ -96,8 +96,8 @@ public class AsyncTaskListImage extends AsyncTask<String,Void,Void> {
     }
 
     @Override
-    protected void onPostExecute(Void aVoid) {
-        super.onPostExecute(aVoid);
+    protected void onPostExecute(ArrayList<Image> list) {
+        super.onPostExecute(list);
         progressDialog.dismiss();
     }
 }

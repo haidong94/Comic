@@ -1,7 +1,10 @@
 package com.example.dong.comic;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -14,7 +17,6 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "MainActivity";
     private static final String URL = "http://1.truyentranhmoi.com/o-long-vien-linh-vat-song/";
     ListView listview;
     ArrayList<Chap> listChap=new ArrayList<>();
@@ -31,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         addControl();
+        restoringPreferences();
         addEvent();
 
 
@@ -38,12 +41,15 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void addEvent() {
+
+
+
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String hrel=listChap.get(position).getHref();
+                String href=listChap.get(position).getHref();
                 Intent intent=new Intent(MainActivity.this,ImageActivity.class);
-                intent.putExtra("href",hrel);
+                intent.putExtra("href",href);
                 startActivity(intent);
 
             }
@@ -57,11 +63,41 @@ public class MainActivity extends AppCompatActivity {
         listview.setAdapter(arrayAdapter);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-//        AsyncTacskListChap asyncTacskListChap= new AsyncTacskListChap(this);
-//        asyncTacskListChap.execute(URL);
-//        listChap=asyncTacskListChap.getListchap();
+
+    public void restoringPreferences(){
+        SharedPreferences pre=this.getSharedPreferences("my_data", MODE_PRIVATE);
+        final String chapCurent=pre.getString("chapCurent","");
+        if(chapCurent!=null)
+        {
+            AlertDialog.Builder b=new AlertDialog.Builder(MainActivity.this);
+            b.setTitle("Question");
+            b.setMessage("Bạn có muốn đọc tiếp không???");
+            b.setPositiveButton("Yes", new DialogInterface. OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which)
+                {
+                    Intent intent=new Intent(MainActivity.this,ImageActivity.class);
+                    intent.putExtra("href",chapCurent);
+                    startActivity(intent);
+                }});
+            b.setNegativeButton("No", new DialogInterface.OnClickListener() {
+
+                @Override
+
+                public void onClick(DialogInterface dialog, int which)
+
+                {
+
+                    dialog.cancel();
+
+                }
+
+            });
+            b.create().show();
+
+        }
+
     }
+
 }
+

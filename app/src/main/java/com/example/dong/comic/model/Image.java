@@ -5,6 +5,7 @@ package com.example.dong.comic.model;
  */
 
 public class Image {
+
     private String org;
 
     public String getOrg() {
