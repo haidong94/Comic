@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.dong.comic.model.Chap;
+import com.example.dong.comic.interFace.IListChap;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -19,14 +20,16 @@ import java.util.ArrayList;
  * Created by DONG on 07-Mar-17.
  */
 
-public class AsyncTacskListChap extends AsyncTask<String, Void, Void> {
+public class AsyncTacskListChap extends AsyncTask<String, Void, ArrayList<Chap>> {
     Context context;
     ArrayList<Chap> listChap=new ArrayList<>();
     ProgressDialog progressDialog;
+    IListChap interfaceListChap;
 
     public AsyncTacskListChap(Context context) {
         this.context = context;
         progressDialog=new ProgressDialog(context);
+        this.interfaceListChap= (IListChap) context;
     }
 
     public ArrayList<Chap> getListchap() {
@@ -59,7 +62,7 @@ public class AsyncTacskListChap extends AsyncTask<String, Void, Void> {
 
 
     @Override
-    protected Void doInBackground(String... strings) {
+    protected ArrayList<Chap> doInBackground(String... strings) {
 
         Document document = null;
         try {
@@ -84,14 +87,13 @@ public class AsyncTacskListChap extends AsyncTask<String, Void, Void> {
                         }
                     }
                 }
-
             }
 
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return null;
+        return listChap;
     }
 
     @Override
@@ -100,9 +102,11 @@ public class AsyncTacskListChap extends AsyncTask<String, Void, Void> {
     }
 
     @Override
-    protected void onPostExecute(Void aVoid) {
-        super.onPostExecute(aVoid);
-        progressDialog.dismiss();
-
+    protected void onPostExecute(ArrayList<Chap> strings) {
+        super.onPostExecute(strings);
+        interfaceListChap.processFinish();
+        if(progressDialog.isShowing())
+            progressDialog.dismiss();
+        interfaceListChap.restoringPreferences1();
     }
 }

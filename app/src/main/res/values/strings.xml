@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Comic</string>
+    <string name="listchap_name">Danh sách chương</string>
+    <string name="title_dialog">Question</string>
+    <string name="message_dialog">Bạn có muốn đọc tiếp không???</string>
+    <string name="message_connect">Bạn cần kết nối mạng!!!</string>
+    <string name="mess">\"Bạn cần kết nối mạng!!!\"</string>
+    <string name="title_connect">Connect</string>
 </resources>

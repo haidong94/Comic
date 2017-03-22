@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.dong.comic.model.Image;
+import com.example.dong.comic.interFace.IListImage;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -23,6 +24,7 @@ public class AsyncTaskListImage extends AsyncTask<String,Void,ArrayList<Image>> 
     ArrayList<Image> list=new ArrayList<>();
     Context context;
     ProgressDialog progressDialog;
+    IListImage interfaceListImage;
 
     public AsyncTaskListImage() {
         super();
@@ -31,6 +33,7 @@ public class AsyncTaskListImage extends AsyncTask<String,Void,ArrayList<Image>> 
     public AsyncTaskListImage(Context context) {
         this.context=context;
         progressDialog=new ProgressDialog(context);
+        this.interfaceListImage= (IListImage) context;
     }
 
     public ArrayList<Image> getList() {
@@ -63,9 +66,6 @@ public class AsyncTaskListImage extends AsyncTask<String,Void,ArrayList<Image>> 
             document = (Document) Jsoup.connect(params[0]).get();
             if (document != null) {
                 Elements listnew=document.select("div.image-chap");
-
-
-
                 Elements subjectElements = listnew.select("img");
 
                     if (subjectElements != null && subjectElements.size() > 0) {
@@ -98,6 +98,7 @@ public class AsyncTaskListImage extends AsyncTask<String,Void,ArrayList<Image>> 
     @Override
     protected void onPostExecute(ArrayList<Image> list) {
         super.onPostExecute(list);
+        interfaceListImage.processFinish();
         progressDialog.dismiss();
     }
 }
