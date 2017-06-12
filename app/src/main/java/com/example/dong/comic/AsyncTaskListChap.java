@@ -5,8 +5,8 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.example.dong.comic.model.Chap;
 import com.example.dong.comic.interFace.IListChap;
+import com.example.dong.comic.model.Chap;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -20,16 +20,16 @@ import java.util.ArrayList;
  * Created by DONG on 07-Mar-17.
  */
 
-public class AsyncTacskListChap extends AsyncTask<String, Void, ArrayList<Chap>> {
+public class AsyncTaskListChap extends AsyncTask<String, Void, ArrayList<Chap>> {
     Context context;
     ArrayList<Chap> listChap=new ArrayList<>();
     ProgressDialog progressDialog;
     IListChap interfaceListChap;
 
-    public AsyncTacskListChap(Context context) {
+    public AsyncTaskListChap(Context context, IListChap interfaceListChap) {
         this.context = context;
         progressDialog=new ProgressDialog(context);
-        this.interfaceListChap= (IListChap) context;
+        this.interfaceListChap= interfaceListChap;
     }
 
     public ArrayList<Chap> getListchap() {

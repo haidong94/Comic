@@ -8,9 +8,18 @@ public class Comic {
     String image;
     String author;
     String category;
+    String status;
     String view;
     String content;
 
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
     public String getImage() {
         return image;
     }

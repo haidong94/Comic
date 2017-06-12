@@ -1,123 +1,86 @@
 package com.example.dong.comic;
 
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.util.Log;
+import android.view.MenuItem;
 
-import com.example.dong.comic.common.AppStatus;
-import com.example.dong.comic.interFace.IListChap;
-import com.example.dong.comic.model.Chap;
+import com.example.dong.comic.adapter.ViewPagerAdapter;
+import com.example.dong.comic.fragment.ComicFragment;
+import com.example.dong.comic.fragment.ListChapFragment;
 
-import java.util.ArrayList;
+public class MainActivity extends AppCompatActivity {
+    BottomNavigationView bottomNavigationView;
+    MenuItem prevMenuItem;
+    ViewPager viewPager;
 
-public class MainActivity extends AppCompatActivity implements IListChap {
-
-    private static final String URL = "http://1.truyentranhmoi.com/o-long-vien-linh-vat-song/";
-    ListView listview;
-    ArrayList<Chap> listChap = new ArrayList<>();
-    ArrayAdapter<Chap> arrayAdapter;
-
+    ComicFragment comicFragment;
+    ListChapFragment listChapFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        viewPager = (ViewPager) findViewById(R.id.viewpager);
 
-
-        if (AppStatus.getInstance(this).isOnline()) {
-
-            AsyncTacskListChap asyncTacskListChap = new AsyncTacskListChap(this);
-            asyncTacskListChap.execute(URL);
-            listChap = asyncTacskListChap.getListchap();
-
-            addControl();
-            addEvent();
-
-        } else {
-
-            new AlertDialog.Builder(this)
-                    .setTitle(R.string.title_connect)
-                    .setMessage(R.string.mess)
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            finish();
-
+        //Initializing the bottomNavigationView
+        bottomNavigationView = (BottomNavigationView)findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(
+                new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.navigation_home:
+                                viewPager.setCurrentItem(0);
+                                break;
+                            case R.id.navigation_dashboard:
+                                viewPager.setCurrentItem(1);
+                                break;
                         }
-                    })
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .show();
-        }
+                        return false;
+                    }
+                });
 
-    }
-
-
-    private void addEvent() {
-        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String href = listChap.get(position).getHref();
-                Intent intent = new Intent(MainActivity.this, ImageActivity.class);
-                intent.putExtra("href", href);
-                startActivity(intent);
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if (prevMenuItem != null) {
+                    prevMenuItem.setChecked(false);
+                }
+                else
+                {
+                    bottomNavigationView.getMenu().getItem(0).setChecked(false);
+                }
+                Log.d("page", "onPageSelected: "+position);
+                bottomNavigationView.getMenu().getItem(position).setChecked(true);
+                prevMenuItem = bottomNavigationView.getMenu().getItem(position);
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
 
             }
         });
 
+        setupViewPager(viewPager);
     }
+        private void setupViewPager(ViewPager viewPager) {
+            ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+            comicFragment=new ComicFragment();
+            listChapFragment=new ListChapFragment();
 
-    private void addControl() {
-        listview = (ListView) findViewById(R.id.listview);
-        arrayAdapter = new ArrayAdapter<Chap>(MainActivity.this, android.R.layout.simple_list_item_1, listChap);
-
-        listview.setAdapter(arrayAdapter);
-
-    }
-
-    @Override
-    public void restoringPreferences1() {
-        SharedPreferences pre = this.getSharedPreferences("my_data", MODE_PRIVATE);
-        final String chapCurent = pre.getString("chapCurent", "");
-        if (chapCurent != "") {
-            AlertDialog.Builder b = new AlertDialog.Builder(MainActivity.this);
-            b.setTitle(R.string.title_dialog);
-            b.setMessage(R.string.message_dialog);
-            b.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    Intent intent = new Intent(MainActivity.this, ImageActivity.class);
-                    intent.putExtra("href", chapCurent);
-                    startActivity(intent);
-                }
-            });
-            b.setNegativeButton("No", new DialogInterface.OnClickListener() {
-
-                @Override
-
-                public void onClick(DialogInterface dialog, int which)
-
-                {
-                    dialog.cancel();
-
-                }
-
-            });
-            b.create().show();
+            adapter.addFragment(comicFragment);
+            adapter.addFragment(listChapFragment);
+            viewPager.setAdapter(adapter);
         }
 
-
-    }
-
-
-    @Override
-    public void processFinish() {
-        arrayAdapter.notifyDataSetChanged();
-    }
 }
-
